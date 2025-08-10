@@ -10,7 +10,9 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
     "@tweakpane/core": "^2.0.5",
+    "esbuild": "0.25.2",
     "prettier": "^3.4.2",
     "vite": "^6.0.11",
     "vite-plugin-pwa": "^1.0.0",

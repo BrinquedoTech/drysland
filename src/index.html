@@ -45,6 +45,62 @@
     </style>
     <link rel="stylesheet" href="./style.css" />
 
+    <!-- Supabase + Pontuação BrinquedoTech -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+      console.log('🚀 Inicializando Supabase para Drysland...')
+      window.supabase = supabase.createClient(
+        'https://ctoffxmespqcgsdfxxll.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0b2ZmeG1lc3BxY2dzZGZ4eGxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyNTc1OTIsImV4cCI6MjA2ODgzMzU5Mn0.OMNHUHAociZqrhbY6HtkeWk_BwGaPn2uaRFWDZh-Yx4'
+      );
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const authToken = urlParams.get('auth_token');
+      if (authToken) {
+        console.log('🔑 Token de auth encontrado, configurando sessão...')
+        window.supabase.auth.setSession({ access_token: authToken, refresh_token: authToken });
+      } else {
+        console.log('ℹ️ Nenhum token de auth encontrado na URL')
+      }
+      
+      // Aguardar carregamento dos scripts de pontuação
+      window.addEventListener('load', () => {
+        console.log('📦 Scripts carregados, verificando gameScoreAPI...')
+        console.log('🔍 window.gameScoreAPI:', !!window.gameScoreAPI)
+        console.log('🔍 window.saveGameScore:', !!window.saveGameScore)
+        
+        // Inicializar GameScoreAPI quando possível
+        const initGameScoreAPI = async () => {
+          try {
+            if (window.gameScoreAPI && !window.gameScoreAPI.isInitialized) {
+              console.log('🔄 Tentando inicializar GameScoreAPI...')
+              
+              // Verificar se há sessão do Supabase
+              const { data: { session } } = await window.supabase.auth.getSession()
+              if (session && session.user) {
+                console.log('✅ Inicializando GameScoreAPI com usuário:', session.user.id)
+                window.gameScoreAPI.init(session.user.id)
+              } else {
+                console.log('ℹ️ Nenhuma sessão encontrada, usando pontuação local')
+              }
+            }
+          } catch (error) {
+            console.error('❌ Erro ao inicializar GameScoreAPI:', error)
+          }
+        }
+        
+        // Tentar inicializar imediatamente
+        initGameScoreAPI()
+        
+        // Tentar novamente após um delay (caso a sessão ainda não esteja pronta)
+        setTimeout(initGameScoreAPI, 2000)
+      })
+    </script>
+
+    <link rel="stylesheet" href="/games/styles.css" />
+    <script src="/games/game-api.js"></script>
+    <script src="/games/ranking.js"></script>
+
     <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
     <link rel="shortcut icon" href="favicon/favicon.ico" />
@@ -283,14 +339,7 @@
               <i class="fa-solid fa-play"></i>
               <label>Start</label>
             </button>
-            <button id="auth" class="hex">
-              <i class="fa-brands fa-google"></i>
-              <label>Log in</label>
-            </button>
-            <button id="credits" class="hex absolute -bottom-20">
-              <i class="fa-solid fa-circle-info"></i>
-              <label>Credits</label>
-            </button>
+
             <button id="settings" title="Settings" class="hex absolute -bottom-[44px] -right-[3px]">
               <i class="fa-solid fa-cog text-2xl"></i>
             </button>

@@ -139,6 +139,55 @@ export default class Experience {
   levelComplete() {
     this.soundPlayer.play('success')
     if (this.level) UI.nextButton.show({ wiggle: true })
+
+    // Salvar pontuação no BrinquedoTech (se disponível)
+    console.log('🎯 Drysland levelComplete - level:', this.level)
+    console.log('🔍 window.saveGameScore available:', !!window.saveGameScore)
+    console.log('🔍 window.gameScoreAPI available:', !!window.gameScoreAPI)
+    console.log('🔍 window.supabase available:', !!window.supabase)
+    
+    try {
+      const score = Math.max(1, this.level) * 100 // exemplo: 100 pontos por nível
+      console.log('💾 Tentando salvar score:', score, 'para jogo: drysland')
+      
+      // Tentar inicializar GameScoreAPI se não estiver inicializada
+      const initAndSave = async () => {
+        if (window.gameScoreAPI && !window.gameScoreAPI.isInitialized && window.supabase) {
+          console.log('🔄 Tentando inicializar GameScoreAPI no levelComplete...')
+          try {
+            const { data: { session } } = await window.supabase.auth.getSession()
+            if (session && session.user) {
+              console.log('✅ Inicializando GameScoreAPI com usuário:', session.user.id)
+              window.gameScoreAPI.init(session.user.id)
+            }
+          } catch (error) {
+            console.error('❌ Erro ao inicializar GameScoreAPI:', error)
+          }
+        }
+        
+        // Salvar pontuação
+        if (window.saveGameScore) {
+          try {
+            const result = await window.saveGameScore('drysland', score, {
+              level: this.level,
+              params: this.levelParams,
+              timestamp: Date.now()
+            })
+            console.log('✅ Score salvo com sucesso:', result)
+            window.refreshRanking && window.refreshRanking()
+          } catch (error) {
+            console.error('❌ Erro ao salvar score:', error)
+          }
+        } else {
+          console.warn('⚠️ window.saveGameScore não disponível')
+        }
+      }
+      
+      initAndSave()
+    } catch (e) {
+      console.error('❌ Erro no levelComplete:', e)
+    }
+
     this.setExplorationMode()
   }
 

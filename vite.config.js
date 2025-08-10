@@ -8,12 +8,12 @@ import restart from 'vite-plugin-restart'
 export default {
   root: 'src/',
   publicDir: '../static/',
-  base: './',
+  base: '/games/drysland/',
   server: {
     host: true, // Open to local network and display URL
   },
   build: {
-    outDir: '../dist', // Output in the dist/ folder
+    outDir: '../../public/games/drysland', // Output to app public folder
     emptyOutDir: true, // Empty the folder first
     sourcemap: true, // Add sourcemap
   },
