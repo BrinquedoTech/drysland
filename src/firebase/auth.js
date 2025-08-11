@@ -24,17 +24,22 @@ export default class Auth {
 
     setPersistence(this.auth, browserLocalPersistence)
 
-    UI.authToggle
-      .onClick(() => (Auth.instance.user ? Auth.instance.signOut() : Auth.instance.signIn()))
-      .disable(true)
+    if (UI.authToggle) {
+      UI.authToggle
+        .onClick(() => (Auth.instance.user ? Auth.instance.signOut() : Auth.instance.signIn()))
+        .disable(true)
+    } else {
+      console.warn('Auth: UI.authToggle não encontrado, desativando controles de auth na UI')
+    }
 
     this.subscribe(user => {
-      UI.authToggle.setLabel(user ? 'Log out' : 'Log in').toggle(!user)
+      if (UI.authToggle) {
+        UI.authToggle.setLabel(user ? 'Log out' : 'Log in').toggle(!user)
+        navigator.onLine && UI.authToggle.enable()
+        window.addEventListener('offline', () => UI.authToggle?.disable(true))
+        window.addEventListener('online', () => UI.authToggle?.enable())
+      }
       user && State.instance.sync()
-
-      navigator.onLine && UI.authToggle.enable()
-      window.addEventListener('offline', () => UI.authToggle.disable(true))
-      window.addEventListener('online', () => UI.authToggle.enable())
     })
   }
 

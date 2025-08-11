@@ -2,21 +2,27 @@ import Button from './button'
 import Text from './text'
 import Toggle from './toggle'
 
+// Função para criar elementos UI apenas se existirem no DOM
+function createUIElement(Class, selector) {
+  const element = document.querySelector(selector)
+  return element ? new Class(selector) : null
+}
+
 export default class UI {
-  static startButton = new Button('#start')
-  static authToggle = new Toggle('#auth')
-  static creditsButton = new Button('#credits')
-  static settingsButton = new Button('#settings')
+  static startButton = createUIElement(Button, '#start')
+  static authToggle = createUIElement(Toggle, '#auth')
+  static creditsButton = createUIElement(Button, '#credits')
+  static settingsButton = createUIElement(Button, '#settings')
 
-  static backButton = new Button('#back')
-  static nextButton = new Button('#next')
+  static backButton = createUIElement(Button, '#back')
+  static nextButton = createUIElement(Button, '#next')
 
-  static menuButton = new Button('#menu')
-  static soundsToggle = new Toggle('#sounds')
-  static loopToggle = new Toggle('#loop')
-  static ambienceToggle = new Toggle('#ambience')
-  static fullscreenToggle = new Toggle('#fullscreen')
+  static menuButton = createUIElement(Button, '#menu')
+  static soundsToggle = createUIElement(Toggle, '#sounds')
+  static loopToggle = createUIElement(Toggle, '#loop')
+  static ambienceToggle = createUIElement(Toggle, '#ambience')
+  static fullscreenToggle = createUIElement(Toggle, '#fullscreen')
 
-  static levelText = new Text('#level')
-  static tutorialText = new Text('#tutorial')
+  static levelText = createUIElement(Text, '#level')
+  static tutorialText = createUIElement(Text, '#tutorial')
 }

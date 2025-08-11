@@ -2,7 +2,7 @@ import gsap from 'gsap'
 
 export default class Element {
   get disabled() {
-    return this.element.style.pointerEvents === 'none'
+    return this.element?.style.pointerEvents === 'none'
   }
 
   constructor(selectorOrElement) {
@@ -11,12 +11,20 @@ export default class Element {
         ? document.querySelector(selectorOrElement)
         : selectorOrElement
 
+    // Verificar se o elemento existe
+    if (!this.element) {
+      console.warn(`Element not found: ${selectorOrElement}`)
+      return
+    }
+
     gsap.set(this.element, { scale: 0 })
     this.element.classList.remove('hidden')
     this.element.setAttribute('tabindex', '-1')
   }
 
   show(options = { wiggle: false }) {
+    if (!this.element) return this
+    
     this.animation?.kill()
 
     this.animation = gsap.to(this.element, {
@@ -30,6 +38,8 @@ export default class Element {
   }
 
   hide() {
+    if (!this.element) return this
+    
     this.animation?.kill()
 
     this.animation = gsap.to(this.element, {
@@ -43,12 +53,16 @@ export default class Element {
   }
 
   disable(applyClass) {
+    if (!this.element) return this
+    
     applyClass && this.element.classList.add('disabled')
     this.element.style.pointerEvents = 'none'
     return this
   }
 
   enable() {
+    if (!this.element) return this
+    
     this.element.classList.remove('disabled')
     this.element.style.pointerEvents = 'auto'
     return this

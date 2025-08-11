@@ -97,12 +97,22 @@ export default class Experience {
     this.menu = new Menu()
     this.soundControls = new SoundControls()
 
-    UI.startButton.onClick(this.start.bind(this)).disable(true)
-    Auth.instance.subscribe(() => UI.startButton.enable())
-    UI.creditsButton.onClick(() => Modal.instance.open('#credits.modal'))
-    UI.menuButton.onClick(this.openMenu.bind(this))
-    UI.nextButton.onClick(this.nextLevel.bind(this))
-    UI.backButton.onClick(this.setExplorationMode.bind(this))
+    if (UI.startButton) {
+      UI.startButton.onClick(this.start.bind(this)).disable(true)
+      Auth.instance.subscribe(() => UI.startButton.enable())
+    }
+    if (UI.creditsButton) {
+      UI.creditsButton.onClick(() => Modal.instance.open('#credits.modal'))
+    }
+    if (UI.menuButton) {
+      UI.menuButton.onClick(this.openMenu.bind(this))
+    }
+    if (UI.nextButton) {
+      UI.nextButton.onClick(this.nextLevel.bind(this))
+    }
+    if (UI.backButton) {
+      UI.backButton.onClick(this.setExplorationMode.bind(this))
+    }
   }
 
   async start() {
@@ -112,9 +122,9 @@ export default class Experience {
     await this.nextLevel()
 
     this.soundControls.show()
-    UI.fullscreenToggle.show()
-    UI.menuButton.show()
-    UI.levelText.show()
+    UI.fullscreenToggle?.show()
+    UI.menuButton?.show()
+    UI.levelText?.show()
   }
 
   async nextLevel() {
@@ -123,7 +133,7 @@ export default class Experience {
     const blocks = state?.blocks
 
     this.level = level
-    UI.levelText.set(`Level ${this.level}`)
+    UI.levelText?.set(`Level ${this.level}`)
 
     this.levelParams = GridConfig.instance.generateLevel(this.level - 1)
     debug.log(`level ${this.level}: `, this.levelParams)
@@ -138,7 +148,7 @@ export default class Experience {
 
   levelComplete() {
     this.soundPlayer.play('success')
-    if (this.level) UI.nextButton.show({ wiggle: true })
+    if (this.level) UI.nextButton?.show({ wiggle: true })
 
     // Salvar pontuação no BrinquedoTech (se disponível)
     console.log('🎯 Drysland levelComplete - level:', this.level)
@@ -201,20 +211,20 @@ export default class Experience {
     this.loaded = false
 
     this.soundControls.hide()
-    UI.menuButton.hide()
-    UI.fullscreenToggle.hide()
-    UI.levelText.hide()
-    UI.tutorialText.hide()
-    UI.backButton.hide()
-    UI.nextButton.hide()
+    UI.menuButton?.hide()
+    UI.fullscreenToggle?.hide()
+    UI.levelText?.hide()
+    UI.tutorialText?.hide()
+    UI.backButton?.hide()
+    UI.nextButton?.hide()
 
     this.camera.autoRotate = false
-    UI.startButton.setLabel('Resume')
+    UI.startButton?.setLabel('Resume')
     this.menu.open()
   }
 
   setGameMode(block) {
-    UI.backButton.show({ wiggle: true })
+    UI.backButton?.show({ wiggle: true })
 
     this.camera.setGameControls(block)
     this.grid?.setShadows(false)
